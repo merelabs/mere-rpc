@@ -2,75 +2,80 @@
 #include "method.h"
 #include "param.h"
 
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
 
-Mere::RPC::Json::Server::~Server()
+Mere::RPC::Server::~Server()
 {
     m_server->stop();
 }
 
-Mere::RPC::Json::Server::Server(const QString &service, QObject *parent)
+Mere::RPC::Server::Server(const QString &server, QObject *parent)
     : QObject(parent),
-      m_service(service),
-      m_registry(new Mere::RPC::Json::Registry())
+      m_registry(new Mere::RPC::Registry())
 {
-    QString server("/" + service);
-    m_server = new Mere::Message::Server(server.toStdString().c_str());
+    QString s(server);
+    if (!s.startsWith("/")) s.prepend("/");
+    m_server = new Mere::Message::Server(s.toStdString().c_str());
     connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
 
     m_server->start();
 }
 
-int Mere::RPC::Json::Server::add(Service *service)
+QObject* Mere::RPC::Server::get(const QString &name)
 {
-    return m_registry->add(service);
+    return m_registry->get(name);
 }
 
-void Mere::RPC::Json::Server::message(const QString &message)
+int Mere::RPC::Server::add(const QString name, QObject *service)
 {
-    qDebug() << "WHAT I GIT AS REQUEST??" << message;
+    return m_registry->add(name, service);
+}
 
+void Mere::RPC::Server::message(const QString &message)
+{
     QJsonDocument document = QJsonDocument::fromJson(message.toUtf8());
     if (document.isNull() || document.isEmpty())
         return;
 
-    if (document.isArray()) return;
+    if (!document.isObject()) return;
 
     QJsonObject object = document.object();
 
-    qDebug() << "Service:" << object.value("service").toString();
-    qDebug() << "Method:"  << object.value("method").toString();
-    qDebug() << "Params:"  << object.value("params").toString();
+    if(!object.contains("service"))
+        return;
 
+    QString serviceName = object.value("service").toString();
 
+    if(!object.contains("method"))
+        return;
 
+    QString methodName = object.value("method").toString();
 
-//    const char *name = object.value("method").toString().toStdString().c_str();
-//    Method method(name);
+    if(!object.contains("args"))
+        return;
 
-//    Param p1;
-//    p1.setName("username");
-//    p1.setType("QString");
-//    method.add(p1);
-
-//    Param p2;
-//    p2.setName("password");
-//    p2.setType("QString");
-//    method.add(p1);
-
-
-//    QMetaMethod mm = m_registry->service(object.value("service").toString())->method(method);
-//    if(mm.isValid())
-//        mm.invoke();
-    try
+    std::vector<QVariant> methodArgs;
+    QJsonValue val = object.value("args");
+    if (val.isArray())
     {
-        Service service("hellow...");
-        service.method("authenticate")->with("a...", "b...")->serve();
+        QJsonArray arr = val.toArray();
+        for(int i = 0; i < arr.size(); i++)
+            methodArgs.push_back(arr.at(i));
     }
-    catch (...)
-    {
 
-    }
+    Service service(serviceName, *this);
+    QVariant value = service.method(methodName)->with(methodArgs)->serve();
+
+    QJsonDocument res;
+
+    QJsonObject obj;
+    obj.insert("version", 1.0);
+    obj.insert("return", QJsonValue::fromVariant(value));
+    obj.insert("error", QJsonValue::Null);
+
+    res.setObject(obj);
+    m_server->send(res.toJson());
 }
 

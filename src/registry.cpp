@@ -1,26 +1,28 @@
 #include "registry.h"
 
-Mere::RPC::Json::Registry::Registry(QObject *parent) : QObject(parent)
+Mere::RPC::Registry::Registry(QObject *parent) : QObject(parent)
 {
 
 }
 
-int Mere::RPC::Json::Registry::add(Service *service)
+int Mere::RPC::Registry::add(const QString &name, QObject *service)
 {
-    std::string name = service->name();
+    if (name.isNull() || name.isEmpty())
+        return 1;
 
     auto it = m_services.find(name);
     if (it != m_services.end())
-        return 1;
+        return 2;
 
     m_services.insert({name, service});
 
     return 0;
 }
 
-Mere::RPC::Json::Service* Mere::RPC::Json::Registry::service(const QString &service) const
+QObject* Mere::RPC::Registry::get(const QString &name) const
 {
-    std::string name = service.toStdString();
+    if (name.isNull() || name.isEmpty())
+        return nullptr;
 
     if (m_services.empty())
         return nullptr;

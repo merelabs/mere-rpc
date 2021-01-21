@@ -14,7 +14,6 @@ DEFINES += MERE_JSON_RPC_LIB
 
 SOURCES += \
     src/client.cpp \
-    src/dispatcher.cpp \
     src/method.cpp \
     src/param.cpp \
     src/registry.cpp \
@@ -23,7 +22,6 @@ SOURCES += \
 
 HEADERS += \
     src/client.h \
-    src/dispatcher.h \
     src/global.h \
     src/method.h \
     src/param.h \
@@ -33,7 +31,11 @@ HEADERS += \
 
 INCLUDEPATH += /usr/local/include
 
-#LIBS += -lmere-message -lrt
+
+DISTFILES += \
+    spec/req.json \
+    spec/res.json
+
 LIBS += -lmere-message
 
 #
@@ -43,7 +45,7 @@ unix {
     target.path = /usr/local/lib
     INSTALLS += target
 
-    INSTALL_PREFIX = /usr/local/include/mere/json-rpc
+    INSTALL_PREFIX = /usr/local/include/mere/rpc
     for(header, HEADERS) {
         sdir = $${dirname(header)}
         sdir = $$replace(sdir, "src", "")

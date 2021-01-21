@@ -1,5 +1,5 @@
-#ifndef METHOD_H
-#define METHOD_H
+#ifndef MERE_RPC_METHOD_H
+#define MERE_RPC_METHOD_H
 
 #include "param.h"
 #include <QObject>
@@ -7,8 +7,6 @@
 namespace Mere
 {
 namespace RPC
-{
-namespace Json
 {
 
 class Method
@@ -31,6 +29,5 @@ private:
 
 }
 }
-}
 
-#endif // METHOD_H
+#endif // MERE_RPC_METHOD_H

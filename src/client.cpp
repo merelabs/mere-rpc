@@ -1,35 +1,59 @@
 #include "client.h"
 
+#include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
 
-Mere::RPC::Json::Client::Client(const QString &service, QObject *parent)
+Mere::RPC::Client::Client(const QString &path, QObject *parent)
     : QObject(parent),
-      m_service(service)
+      m_path(path)
 {
-    QString server("/" + service);
-    m_client = new Mere::Message::Client(server.toStdString().c_str());
+    QStringList parts = path.split("/");
+    if (parts.size() > 2)
+    {
+        m_service = parts.takeLast();
+        m_server  = parts.join("/");
+    }
+    else
+    {
+        m_server = path;
+    }
 
+    if (!m_server.startsWith("/"))
+        m_server = m_server.prepend("/");
+
+    m_client = new Mere::Message::Client(m_server.toStdString().c_str());
     connect(m_client, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
 
     m_client->join();
 }
 
-
-void Mere::RPC::Json::Client::call()
+Mere::RPC::Client* Mere::RPC::Client::method(const QString &method)
 {
-    qDebug() << "YES GOT A CALL";
+    m_method = method;
+    return this;
+};
 
-    QJsonObject params;
-    params.insert("parameter1", 1);
-    params.insert ("parameter2", 2);
+Mere::RPC::Client* Mere::RPC::Client::with(const std::vector<QVariant> args)
+{
+    m_args = args;
+
+    return this;
+}
+
+void Mere::RPC::Client::call()
+{
+    QJsonArray args;
+    for(const auto &arg : m_args)
+        args.append(arg.toJsonValue());
 
     // create the main object
     QJsonObject jsonObj;
-//    jsonObj.insert("uuid", QUuid::createUuid().toString());
+    jsonObj.insert("version", 1.0);
+    jsonObj.insert("uuid", QUuid::createUuid().toString());
     jsonObj.insert("service", m_service);
     jsonObj.insert("method", m_method);
-    jsonObj.insert("params", params);
+    jsonObj.insert("args", args);
 
     qDebug() << jsonObj.toVariantMap();
 
@@ -39,7 +63,9 @@ void Mere::RPC::Json::Client::call()
     m_client->send(request);
 }
 
-void Mere::RPC::Json::Client::message(const QString &message)
+void Mere::RPC::Client::message(const QString &message)
 {
     qDebug() << " KI BLE??";
+
+    m_callback(QVariant(message), QVariant());
 }

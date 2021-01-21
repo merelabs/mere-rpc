@@ -1,7 +1,6 @@
-#ifndef SERVER_H
-#define SERVER_H
+#ifndef MERE_RPC_SERVER_H
+#define MERE_RPC_SERVER_H
 
-#include "service.h"
 #include "registry.h"
 
 #include "mere/message/server.h"
@@ -13,17 +12,16 @@ namespace Mere
 {
 namespace RPC
 {
-namespace Json
-{
 
 class Server : public QObject
 {
     Q_OBJECT
 public:
     ~Server();
-    explicit Server(const QString &service, QObject *parent = nullptr);
+    explicit Server(const QString &server, QObject *parent = nullptr);
 
-    int add(Service *service);
+    int add(const QString name, QObject *service);
+    QObject* get(const QString &name);
 
 signals:
 //    void message(const QString &message);
@@ -32,16 +30,12 @@ public slots:
     void message(const QString &message);
 
 private:
-    QString m_service;
     Mere::Message::Server *m_server;
-
-    std::map<std::string, void *> m_methods;
-
     Registry *m_registry;
 };
 
 }
 }
-}
 
-#endif // SERVER_H
+
+#endif // MERE_RPC_SERVER_H

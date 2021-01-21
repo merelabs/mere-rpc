@@ -1,5 +1,5 @@
-#ifndef REGISTRY_H
-#define REGISTRY_H
+#ifndef MERE_RPC_REGISTRY_H
+#define MERE_RPC_REGISTRY_H
 
 #include "service.h"
 
@@ -12,8 +12,6 @@ namespace Mere
 {
 namespace RPC
 {
-namespace Json
-{
 
 class Registry : public QObject
 {
@@ -22,18 +20,17 @@ public:
     explicit Registry(QObject *parent = nullptr);
 
     // register is a keyword...
-    int add(Service *service);
+    int add(const QString &name, QObject *service);
 
-    Service* service(const QString &service) const;
+    QObject* get(const QString &name) const;
 
 signals:
 
 private:
-    std::unordered_map<std::string, Service *> m_services;
+    std::unordered_map<QString, QObject *> m_services;
 };
 
 }
 }
-}
 
-#endif // REGISTRY_H
+#endif // MERE_RPC_REGISTRY_H

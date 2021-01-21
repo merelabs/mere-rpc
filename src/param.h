@@ -1,5 +1,5 @@
-#ifndef PARAM_H
-#define PARAM_H
+#ifndef MERE_RPC_PARAM_H
+#define MERE_RPC_PARAM_H
 
 #include <QObject>
 #include <QVariant>
@@ -7,8 +7,6 @@
 namespace Mere
 {
 namespace RPC
-{
-namespace Json
 {
 
 class Param
@@ -36,6 +34,6 @@ private:
 
 }
 }
-}
 
-#endif // PARAM_H
+
+#endif // MERE_RPC_PARAM_H
