@@ -8,19 +8,18 @@ Mere::RPC::Client::Client(const QString &path, QObject *parent)
     : QObject(parent),
       m_path(path)
 {
-    QStringList parts = path.split("/");
-    if (parts.size() > 2)
-    {
-        m_service = parts.takeLast();
-        m_server  = parts.join("/");
-    }
-    else
-    {
-        m_server = path;
-    }
+    if (m_path.startsWith("/"))
+        m_path = m_path.prepend("/");
 
-    if (!m_server.startsWith("/"))
-        m_server = m_server.prepend("/");
+    QStringList parts = path.split("/");
+    if (parts.size() < 3)
+        throw std::invalid_argument("Invalid service path!");
+
+    m_service = parts.takeLast();
+    if(m_service.isNull() || m_service.isEmpty())
+        throw std::invalid_argument("Invalid service name in service path!");
+
+    m_server  = parts.join("/");
 
     m_client = new Mere::Message::Client(m_server.toStdString().c_str());
     connect(m_client, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
@@ -55,8 +54,6 @@ void Mere::RPC::Client::call()
     jsonObj.insert("method", m_method);
     jsonObj.insert("args", args);
 
-    qDebug() << jsonObj.toVariantMap();
-
     QJsonDocument jsonDocument(jsonObj);
     QString request(jsonDocument.toJson(QJsonDocument::Compact));
 
@@ -65,7 +62,6 @@ void Mere::RPC::Client::call()
 
 void Mere::RPC::Client::message(const QString &message)
 {
-    qDebug() << " KI BLE??";
-
-    m_callback(QVariant(message), QVariant());
+    if (m_callback)
+        m_callback(QVariant(message), QVariant());
 }

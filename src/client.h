@@ -47,7 +47,7 @@ private:
 
     Mere::Message::Client *m_client;
 
-    Callback m_callback;
+    Callback m_callback = nullptr;
 };
 
 }

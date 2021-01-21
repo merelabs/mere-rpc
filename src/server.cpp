@@ -11,16 +11,21 @@ Mere::RPC::Server::~Server()
     m_server->stop();
 }
 
-Mere::RPC::Server::Server(const QString &server, QObject *parent)
+Mere::RPC::Server::Server(const QString &path, QObject *parent)
     : QObject(parent),
+      m_path(path),
       m_registry(new Mere::RPC::Registry())
 {
-    QString s(server);
-    if (!s.startsWith("/")) s.prepend("/");
-    m_server = new Mere::Message::Server(s.toStdString().c_str());
-    connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
+    if(!m_path.startsWith("/"))
+        m_path = m_path.prepend("/");
 
-    m_server->start();
+    m_server = new Mere::Message::Server(m_path.toStdString().c_str());
+    connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
+}
+
+int Mere::RPC::Server::start() const
+{
+    return m_server->start();
 }
 
 QObject* Mere::RPC::Server::get(const QString &name)
