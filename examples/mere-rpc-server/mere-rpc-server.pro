@@ -10,16 +10,16 @@ TEMPLATE = app
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+HEADERS += \
+    authservice.h \
+    server.h
+
 SOURCES += \
         authservice.cpp \
         main.cpp \
-        rpcserver.cpp
+        server.cpp
 
 
 INCLUDEPATH += /usr/local/include
 
-LIBS += -lmere-json-rpc
-
-HEADERS += \
-    authservice.h \
-    rpcserver.h
+LIBS += -lmere-rpc

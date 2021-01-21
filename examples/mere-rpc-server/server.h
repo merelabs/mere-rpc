@@ -1,7 +1,10 @@
 #ifndef MESSAGESERVER_H
 #define MESSAGESERVER_H
 
-#include "mere/json-rpc/server.h"
+#include "authservice.h"
+
+#include "mere/rpc/server.h"
+#include "mere/rpc/service.h"
 
 #include <QObject>
 #include <QDebug>
@@ -22,8 +25,9 @@ public slots:
 //    void message(const Mere::Message::Message &message);
 
 private:
-//    Mere::Message::Server *m_server;
-    Mere::RPC::Json::Server *m_server;
+    AuthService *m_authService;
+
+    Mere::RPC::Server *m_server;
 
 };
 
