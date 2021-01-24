@@ -21,11 +21,18 @@ Mere::RPC::Server::Server(const QString &path, QObject *parent)
 
     m_server = new Mere::Message::Server(m_path.toStdString().c_str());
     connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
+
 }
 
 int Mere::RPC::Server::start() const
 {
-    return m_server->start();
+    int err = m_server->start();
+    if (!err)
+    {
+        //connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
+    }
+
+    return err;
 }
 
 QObject* Mere::RPC::Server::get(const QString &name)
