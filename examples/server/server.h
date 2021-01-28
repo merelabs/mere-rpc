@@ -10,16 +10,16 @@
 #include <QDebug>
 
 
-class RPCServer : public QObject
+class Server : public QObject
 {
     Q_OBJECT
 public:
-    explicit RPCServer(QObject *parent = nullptr);
+    explicit Server(QObject *parent = nullptr);
 
 signals:
 
 public slots:
-    void request(const QJsonObject &);
+//    void request(const QJsonObject &);
 //    void ping(const int &pid);
 //    void message(const QString &message);
 //    void message(const Mere::Message::Message &message);

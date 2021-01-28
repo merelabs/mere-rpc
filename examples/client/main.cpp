@@ -1,7 +1,7 @@
 #include <QCoreApplication>
 
 #include "client.h"
-#include "mere/json-rpc/client.h"
+#include "mere/rpc/client.h"
 
 int main(int argc, char *argv[])
 {
