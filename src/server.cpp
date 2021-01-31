@@ -8,7 +8,12 @@
 
 Mere::RPC::Server::~Server()
 {
-    m_server->stop();
+    if (m_server)
+    {
+        m_server->stop();
+        delete m_server;
+        m_server = nullptr;
+    }
 }
 
 Mere::RPC::Server::Server(const std::string &path, QObject *parent)
@@ -18,16 +23,11 @@ Mere::RPC::Server::Server(const std::string &path, QObject *parent)
 {
     m_server = new Mere::Message::Server(m_path);
     connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
-
 }
 
 int Mere::RPC::Server::start() const
 {
     int err = m_server->start();
-    if (!err)
-    {
-        //connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
-    }
 
     return err;
 }

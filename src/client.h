@@ -18,18 +18,21 @@ class Client : public QObject
 {
     Q_OBJECT
 public:
+    ~Client();
     explicit Client(const std::string &path, QObject *parent = nullptr);
 
+    Client* service(const std::string &service);
     Client* method(const std::string &method);
-    Client* with(const std::vector<QVariant> params);
-
-    void call();
+    Client* with(const std::vector<QVariant> args);
 
     void call(Callback callback)
     {
         m_callback = callback;
         call();
     };
+
+private:
+    void call();
 
 signals:
     void response(const QJsonObject &);
@@ -43,7 +46,7 @@ private:
     std::string m_service;
     std::string m_method;
 
-    std::vector<QVariant> m_params;
+    std::vector<QVariant> m_args;
 
     Mere::Message::Client *m_client;
 

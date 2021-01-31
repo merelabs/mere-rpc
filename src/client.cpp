@@ -6,6 +6,17 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
+Mere::RPC::Client::~Client()
+{
+    if (m_client)
+    {
+        m_client->done();
+        delete m_client;
+        m_client = nullptr;
+    }
+
+}
+
 Mere::RPC::Client::Client(const std::string &path, QObject *parent)
     : QObject(parent),
       m_path(path)
@@ -26,32 +37,38 @@ Mere::RPC::Client::Client(const std::string &path, QObject *parent)
     m_client->join();
 }
 
+Mere::RPC::Client* Mere::RPC::Client::service(const std::string &service)
+{
+    m_service = service;
+    return this;
+};
+
 Mere::RPC::Client* Mere::RPC::Client::method(const std::string &method)
 {
     m_method = method;
     return this;
 };
 
-Mere::RPC::Client* Mere::RPC::Client::with(const std::vector<QVariant> params)
+Mere::RPC::Client* Mere::RPC::Client::with(const std::vector<QVariant> args)
 {
-    m_params = params;
+    m_args = args;
 
     return this;
 }
 
 void Mere::RPC::Client::call()
 {
-    QJsonArray params;
-    for(const auto &arg : m_params)
-        params.append(arg.toJsonValue());
+    QJsonArray args;
+    for(const auto &arg : m_args)
+        args.append(arg.toJsonValue());
 
     // create the main object
     QJsonObject jsonObj;
     jsonObj.insert("version", 1.0);
-    jsonObj.insert("uuid", QUuid::createUuid().toString());
+    jsonObj.insert("uuid"   , QUuid::createUuid().toString());
     jsonObj.insert("service", QJsonValue(m_service.c_str()));
-    jsonObj.insert("method", QJsonValue(m_method.c_str()));
-    jsonObj.insert("args", params);
+    jsonObj.insert("method" , QJsonValue(m_method.c_str()));
+    jsonObj.insert("args"   , args);
 
     QJsonDocument jsonDocument(jsonObj);
     QString request(jsonDocument.toJson(QJsonDocument::Compact));
