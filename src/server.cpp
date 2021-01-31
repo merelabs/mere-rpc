@@ -62,11 +62,11 @@ void Mere::RPC::Server::message(const QString &message)
 
     QString methodName = object.value("method").toString();
 
-    if(!object.contains("params"))
+    if(!object.contains("args"))
         return;
 
     std::vector<QVariant> methodArgs;
-    QJsonValue val = object.value("params");
+    QJsonValue val = object.value("args");
     if (val.isArray())
     {
         QJsonArray arr = val.toArray();

@@ -51,7 +51,7 @@ void Mere::RPC::Client::call()
     jsonObj.insert("uuid", QUuid::createUuid().toString());
     jsonObj.insert("service", QJsonValue(m_service.c_str()));
     jsonObj.insert("method", QJsonValue(m_method.c_str()));
-    jsonObj.insert("params", params);
+    jsonObj.insert("args", params);
 
     QJsonDocument jsonDocument(jsonObj);
     QString request(jsonDocument.toJson(QJsonDocument::Compact));
