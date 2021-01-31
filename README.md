@@ -49,4 +49,4 @@ It is still in beta state.
 
 
 # Reference
-* [Mere Message](https://message.merelabs.io/)
+* [Mere Message](https://github.com/merelabs/mere-message-lib)
