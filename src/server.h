@@ -18,7 +18,7 @@ class Server : public QObject
     Q_OBJECT
 public:
     ~Server();
-    explicit Server(const QString &server, QObject *parent = nullptr);
+    explicit Server(const std::string &server, QObject *parent = nullptr);
     int start() const;
 
     int add(const QString name, QObject *service);
@@ -31,7 +31,7 @@ public slots:
     void message(const QString &message);
 
 private:
-    QString m_path;
+    std::string m_path;
     Mere::Message::Server *m_server;
     Registry *m_registry;
 };

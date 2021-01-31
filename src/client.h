@@ -18,10 +18,10 @@ class Client : public QObject
 {
     Q_OBJECT
 public:
-    explicit Client(const QString &path, QObject *parent = nullptr);
+    explicit Client(const std::string &path, QObject *parent = nullptr);
 
-    Client* method(const QString &method);
-    Client* with(const std::vector<QVariant> args);
+    Client* method(const std::string &method);
+    Client* with(const std::vector<QVariant> params);
 
     void call();
 
@@ -38,12 +38,12 @@ public slots:
     void message(const QString &message);
 
 private:
-    QString m_path;
-    QString m_server;
-    QString m_service;
-    QString m_method;
+    std::string m_path;
+    std::string m_server;
+    std::string m_service;
+    std::string m_method;
 
-    std::vector<QVariant> m_args;
+    std::vector<QVariant> m_params;
 
     Mere::Message::Client *m_client;
 

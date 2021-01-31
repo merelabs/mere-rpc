@@ -11,15 +11,12 @@ Mere::RPC::Server::~Server()
     m_server->stop();
 }
 
-Mere::RPC::Server::Server(const QString &path, QObject *parent)
+Mere::RPC::Server::Server(const std::string &path, QObject *parent)
     : QObject(parent),
       m_path(path),
       m_registry(new Mere::RPC::Registry())
 {
-    if(!m_path.startsWith("/"))
-        m_path = m_path.prepend("/");
-
-    m_server = new Mere::Message::Server(m_path.toStdString().c_str());
+    m_server = new Mere::Message::Server(m_path);
     connect(m_server, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
 
 }
@@ -65,11 +62,11 @@ void Mere::RPC::Server::message(const QString &message)
 
     QString methodName = object.value("method").toString();
 
-    if(!object.contains("args"))
+    if(!object.contains("params"))
         return;
 
     std::vector<QVariant> methodArgs;
-    QJsonValue val = object.value("args");
+    QJsonValue val = object.value("params");
     if (val.isArray())
     {
         QJsonArray arr = val.toArray();
