@@ -7,6 +7,11 @@
 A simple `local` server that hosts a sample `auth` service and to accept request
 to perform user's authentication;
 
+
+```
+#include "mere/rpc/server.h"
+#include "authservice.h"
+
 int main()
 {
     Mere::RPC::Server server = new Mere::RPC::Server("mms://local");
@@ -18,6 +23,7 @@ int main()
     // Just start it!
     server->start();
 }
+```
 
 ## Client
 
@@ -26,6 +32,7 @@ A simple might look like as following; here client is communicating server
 method we would like to call is `authenticate` and it accepts two arguments 
 that we pass as positional arguments.
 
+```
 #include "mere/rpc/client.h"
 
 int main()
@@ -35,7 +42,7 @@ int main()
         qDebug() << "Got it:" << res << err;
     });
 }
-
+```
 
 # Status
 It is still in beta state.
