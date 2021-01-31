@@ -6,7 +6,7 @@ Server::Server(QObject *parent) : QObject(parent)
     // A Server
     try
     {
-        m_server = new Mere::RPC::Server("/display");
+        m_server = new Mere::RPC::Server("mms://display");
     }
     catch(...)
     {
