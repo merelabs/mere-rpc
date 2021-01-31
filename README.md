@@ -17,7 +17,7 @@ int main()
     Mere::RPC::Server server = new Mere::RPC::Server("mms://local");
     
     // register service
-    AuthService authService= new AuthService();
+    AuthService *authService= new AuthService();
     server->add("auth", authService);
     
     // Just start it!
