@@ -18,7 +18,7 @@ int main()
     
     // register service
     AuthService authService= new AuthService();
-    m_server->add("auth", authService);
+    server->add("auth", authService);
     
     // Just start it!
     server->start();
