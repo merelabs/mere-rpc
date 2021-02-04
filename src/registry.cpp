@@ -5,9 +5,9 @@ Mere::RPC::Registry::Registry(QObject *parent) : QObject(parent)
 
 }
 
-int Mere::RPC::Registry::add(const QString &name, QObject *service)
+int Mere::RPC::Registry::add(const std::string &name, QObject *service)
 {
-    if (name.isNull() || name.isEmpty())
+    if (name.empty())
         return 1;
 
     auto it = m_services.find(name);
@@ -19,9 +19,9 @@ int Mere::RPC::Registry::add(const QString &name, QObject *service)
     return 0;
 }
 
-QObject* Mere::RPC::Registry::get(const QString &name) const
+QObject* Mere::RPC::Registry::get(const std::string &name) const
 {
-    if (name.isNull() || name.isEmpty())
+    if (name.empty())
         return nullptr;
 
     if (m_services.empty())

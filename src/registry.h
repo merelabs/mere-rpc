@@ -20,14 +20,14 @@ public:
     explicit Registry(QObject *parent = nullptr);
 
     // register is a keyword...
-    int add(const QString &name, QObject *service);
+    int add(const std::string &name, QObject *service);
 
-    QObject* get(const QString &name) const;
+    QObject* get(const std::string &name) const;
 
 signals:
 
 private:
-    std::unordered_map<QString, QObject *> m_services;
+    std::unordered_map<std::string, QObject *> m_services;
 };
 
 }

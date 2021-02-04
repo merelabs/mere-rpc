@@ -12,7 +12,7 @@ namespace Mere
 namespace RPC
 {
 
-typedef void (*Callback)(QVariant res, QVariant err);
+typedef void (*Callback)(QVariant res, QVariant err, void *context);
 
 class Client : public QObject
 {
@@ -25,9 +25,10 @@ public:
     Client* method(const std::string &method);
     Client* with(const std::vector<QVariant> args);
 
-    void call(Callback callback)
+    void call(Callback callback, void *context = nullptr)
     {
         m_callback = callback;
+        m_context = context;
         call();
     };
 
@@ -38,7 +39,7 @@ signals:
     void response(const QJsonObject &);
 
 public slots:
-    void message(const QString &message);
+    void message(const std::string &message);
 
 private:
     std::string m_path;
@@ -51,6 +52,7 @@ private:
     Mere::Message::Client *m_client;
 
     Callback m_callback = nullptr;
+    void *m_context = nullptr;
 };
 
 }

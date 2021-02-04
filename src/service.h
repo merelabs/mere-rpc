@@ -20,14 +20,14 @@ class Service : public QObject
 {
     Q_OBJECT
 public:
-    explicit Service(const QString &service, Server &server);
+    explicit Service(const std::string &service, Server &server);
 
-    Service* method(const QString &name);
+    Service* method(const std::string &name);
     Service* with(const std::vector<QVariant> args);
     QVariant serve();
 
 private:
-    std::vector<QMetaMethod> filterByName(const QString &name) const;
+    std::vector<QMetaMethod> filterByName(const std::string &name) const;
     std::vector<QMetaMethod> filterByArgs(const std::vector<QVariant> args) const;
     std::vector<QVariant> convertType(const QMetaMethod &method, const std::vector<QVariant> args);
     QVariant call(QObject *object, const QMetaMethod &method, const std::vector<QVariant> &args);
@@ -40,8 +40,8 @@ signals:
 private:
     QObject *m_provider;
 
-    const QString m_service;
-    const QString m_method;
+    const std::string m_service;
+    const std::string m_method;
 
     std::vector<QVariant> m_args;
 

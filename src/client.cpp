@@ -8,6 +8,7 @@
 
 Mere::RPC::Client::~Client()
 {
+    qDebug() << "dtor...";
     if (m_client)
     {
         m_client->done();
@@ -27,12 +28,13 @@ Mere::RPC::Client::Client(const std::string &path, QObject *parent)
     if(m_server.length() == 0)
         throw std::invalid_argument("Invalid server name in service path!");
 
+    // optional
     m_service = uri.service();
-    if(m_service.length() == 0)
-        throw std::invalid_argument("Invalid service name in service path!");
+//    if(m_service.length() == 0)
+//        throw std::invalid_argument("Invalid service name in service path!");
 
     m_client = new Mere::Message::Client(uri.fqbase());
-    connect(m_client, SIGNAL(message(const QString &)), this, SLOT(message(const QString &)));
+    connect(m_client, SIGNAL(message(const std::string &)), this, SLOT(message(const std::string &)));
 
     m_client->join();
 }
@@ -64,20 +66,43 @@ void Mere::RPC::Client::call()
 
     // create the main object
     QJsonObject jsonObj;
-    jsonObj.insert("version", 1.0);
-    jsonObj.insert("uuid"   , QUuid::createUuid().toString());
-    jsonObj.insert("service", QJsonValue(m_service.c_str()));
-    jsonObj.insert("method" , QJsonValue(m_method.c_str()));
-    jsonObj.insert("args"   , args);
+    jsonObj.insert("id"   , QUuid::createUuid().toString());
+    jsonObj.insert("ver", 1.0);
+
+    QJsonObject reqObj;
+    reqObj.insert("serv", QJsonValue(m_service.c_str()));
+    reqObj.insert("func", QJsonValue(m_method.c_str()));
+    reqObj.insert("args", args);
+
+    jsonObj.insert("req", reqObj);
 
     QJsonDocument jsonDocument(jsonObj);
-    QString request(jsonDocument.toJson(QJsonDocument::Compact));
 
-    m_client->send(request);
+    const QByteArray request = jsonDocument.toJson(QJsonDocument::Compact);
+
+    m_client->send(request.toStdString());
 }
 
-void Mere::RPC::Client::message(const QString &message)
+void Mere::RPC::Client::message(const std::string &message)
 {
     if (m_callback)
-        m_callback(QVariant(message), QVariant());
+    {
+        QJsonDocument document = QJsonDocument::fromJson(QByteArray(message.c_str()));
+        if (document.isNull() || document.isEmpty())
+            return;
+
+        if (!document.isObject()) return;
+
+        QJsonObject object = document.object();
+
+        QVariant res;
+        if (object.contains("res"))
+            res = object.value("res").toVariant();
+
+        QVariant err;
+        if (object.contains("err"))
+            err = object.value("err").toVariant();
+
+        m_callback(res, err, m_context);
+    }
 }

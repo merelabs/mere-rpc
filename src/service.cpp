@@ -2,16 +2,18 @@
 #include "server.h"
 #include <stdarg.h>
 
-Mere::RPC::Service::Service(const QString &service, Server &server)
+#include <iostream>
+
+Mere::RPC::Service::Service(const std::string &service, Server &server)
     : QObject(&server),
       m_service(service)
 {
     m_provider = server.get(service);
 }
 
-Mere::RPC::Service* Mere::RPC::Service::method(const QString &name)
+Mere::RPC::Service* Mere::RPC::Service::method(const std::string &name)
 {
-    qDebug() << "Filter methods by name:" << name << m_provider;
+    std::cout << "Filter methods by name:" << name << m_provider << std::endl;
     if (m_provider)
         m_methods = this->filterByName(name);
 
@@ -30,6 +32,7 @@ Mere::RPC::Service* Mere::RPC::Service::with(const std::vector<QVariant> args)
 QVariant Mere::RPC::Service::serve()
 {
     QVariant value;
+    qDebug() << "?????" <<m_methods.size();
     if (m_provider && m_methods.size())
         value = call(m_provider, m_methods.at(0), m_args);
 
@@ -38,7 +41,7 @@ QVariant Mere::RPC::Service::serve()
     return value;
 }
 
-std::vector<QMetaMethod> Mere::RPC::Service::filterByName(const QString &name) const
+std::vector<QMetaMethod> Mere::RPC::Service::filterByName(const std::string &name) const
 {
     std::vector<QMetaMethod> metaMethods;
 
@@ -51,12 +54,13 @@ std::vector<QMetaMethod> Mere::RPC::Service::filterByName(const QString &name) c
         if (metaMethod.access() != QMetaMethod::Public || metaMethod.methodType() == QMetaMethod::Signal)
             continue;
 
-        if (QString(metaMethod.name()).compare(name) != 0)
+        if (metaMethod.name().compare(QByteArray(name.c_str())) != 0)
             continue;
 
         metaMethods.push_back(metaMethod);
     }
 
+    qDebug() << "METHOD FOUND?" << metaMethods.size();
     return metaMethods;
 }
 
@@ -84,14 +88,17 @@ bool Mere::RPC::Service::isArgTypeUsable(const QMetaMethod &method, const std::v
     for(int i = 0; i < args.size(); i++)
     {
         QVariant arg = args[i];
+        qDebug() << "0...." << arg << arg;
 
-        int argType = arg.userType();
+        int argType = arg.userType() ;
         int paramType = method.parameterType(i);
-
+        qDebug() << "1...." << argType << paramType << arg.typeName() << method.parameterTypes();
         if (argType == paramType)
             continue;
 
-        if(!arg.canConvert(paramType))
+        qDebug() << "2...." << arg.canConvert(paramType);
+
+        if(!arg.canConvert(paramType) /*&& !arg.convert(paramType)*/)
             return false;
     }
 
