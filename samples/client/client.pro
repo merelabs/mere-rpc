@@ -17,7 +17,7 @@ SOURCES += \
 
 INCLUDEPATH += /usr/local/include
 
-LIBS += -lmere-rpc -lrt
-
+LIBS += -lmere-rpc -lutil -lrt
+LIBS += -lmere-display -lmere-auth -lmere-utils -lmere-widgets
 HEADERS += \
     client.h
