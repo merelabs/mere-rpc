@@ -25,17 +25,30 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.12.1
 
-      - uses: actions/download-artifact@v2
+      #- uses: actions/download-artifact@v2
+      #  with:
+      #    name: mere-message-lib.latest
+      #    path: /tmp/mere-message-lib.tgz
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
         with:
-          name: mere-message-lib.latest
-          path: /tmp/mere-message-lib.tgz
+         repository: https://github.com/merelabs/mere-message-lib
+
+      # Runs a set of commands using the runners shell
+      - name: Build dependenies -> mere-message-lib
+        run: |
+          qmake -makefile mere-message-lib.pro -spec linux-clang 
+          qmake
+          make
+          sudo make install
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
-      - name: Install required mere-message-lib
-        run: sudo tar -zxvf /tmp/mere-message-lib.tgz -C /
+      #- name: Install required mere-message-lib
+      #  run: sudo tar -zxvf /tmp/mere-message-lib.tgz -C /
 
       # Runs a single command using the runners shell
       - name: Run a one-line script
