@@ -106,7 +106,7 @@ void Mere::RPC::Server::message(const std::string &message)
     obj.insert("err", QJsonValue::Null);
 
     res.setObject(obj);
-    qDebug() << "RES" << res.toJson();
+
     m_server->send(res.toJson().toStdString());
 }
 

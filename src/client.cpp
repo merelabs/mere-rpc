@@ -36,7 +36,9 @@ Mere::RPC::Client::Client(const std::string &path, QObject *parent)
     m_client = new Mere::Message::Client(uri.fqbase());
     connect(m_client, SIGNAL(message(const std::string &)), this, SLOT(message(const std::string &)));
 
-    m_client->join();
+    int ok = m_client->join();
+    if (ok)
+        throw std::runtime_error("Unable to connet with server.");
 }
 
 Mere::RPC::Client* Mere::RPC::Client::service(const std::string &service)

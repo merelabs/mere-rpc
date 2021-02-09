@@ -1,6 +1,6 @@
 {
-    "version" : 1.0
-    "uuid" :
-    "return" :
-    "error" :
+    "id"    : string
+    "ver"   : 1.0
+    "res"   : value
+    "err"   : null | object
 }

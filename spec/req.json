@@ -1,7 +1,8 @@
 {
-    "version" : 1.0
-    "uuid"    : string
-    "service" : string
-    "method"  : string
-    "args"    : array
+    "id"       : string
+    "ver"      : 1.0
+    "req"      : object
+    "req.serv" : string
+    "req.func" : string
+    "req.args" : array
 }
