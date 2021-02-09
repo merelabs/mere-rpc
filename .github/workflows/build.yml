@@ -24,14 +24,14 @@ jobs:
     steps:
       - name: Install Qt
         uses: jurplel/install-qt-action@v2.12.1
-        
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
 
       - uses: actions/download-artifact@v2
         with:
           name: mere-message-lib.latest
-          path: /tmp/
+          path: /tmp/mere-message-lib.tgz
+
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
 
       # Runs a single command using the runners shell
       - name: Install required mere-message-lib
