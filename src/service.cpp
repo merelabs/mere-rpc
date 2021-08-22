@@ -13,7 +13,6 @@ Mere::RPC::Service::Service(const std::string &service, Server &server)
 
 Mere::RPC::Service* Mere::RPC::Service::method(const std::string &name)
 {
-    std::cout << "Filter methods by name:" << name << m_provider << std::endl;
     if (m_provider)
         m_methods = this->filterByName(name);
 
@@ -22,7 +21,6 @@ Mere::RPC::Service* Mere::RPC::Service::method(const std::string &name)
 
 Mere::RPC::Service* Mere::RPC::Service::with(const std::vector<QVariant> args)
 {
-    qDebug() << "Filter methods by args:" << args;
     if (m_provider && m_methods.size())
         m_methods = this->filterByArgs(m_args = args);
 
@@ -32,11 +30,8 @@ Mere::RPC::Service* Mere::RPC::Service::with(const std::vector<QVariant> args)
 QVariant Mere::RPC::Service::serve()
 {
     QVariant value;
-    qDebug() << "?????" <<m_methods.size();
     if (m_provider && m_methods.size())
         value = call(m_provider, m_methods.at(0), m_args);
-
-    qDebug() << "Yes, going to server!!!" << value;
 
     return value;
 }
@@ -60,7 +55,6 @@ std::vector<QMetaMethod> Mere::RPC::Service::filterByName(const std::string &nam
         metaMethods.push_back(metaMethod);
     }
 
-    qDebug() << "METHOD FOUND?" << metaMethods.size();
     return metaMethods;
 }
 
@@ -88,15 +82,12 @@ bool Mere::RPC::Service::isArgTypeUsable(const QMetaMethod &method, const std::v
     for(int i = 0; i < args.size(); i++)
     {
         QVariant arg = args[i];
-        qDebug() << "0...." << arg << arg;
 
         int argType = arg.userType() ;
         int paramType = method.parameterType(i);
-        qDebug() << "1...." << argType << paramType << arg.typeName() << method.parameterTypes();
+
         if (argType == paramType)
             continue;
-
-        qDebug() << "2...." << arg.canConvert(paramType);
 
         if(!arg.canConvert(paramType) /*&& !arg.convert(paramType)*/)
             return false;
@@ -182,7 +173,7 @@ QVariant Mere::RPC::Service::call(QObject *object, const QMetaMethod &method, co
     );
 
     if (!ok) {
-        qWarning() << "Calling" << method.methodSignature() << "failed.";
+        std::cerr << "Calling" << method.methodSignature().toStdString() << "failed." << std::endl;
         return QVariant();
     } else {
         return returnValue;
